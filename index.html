@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ek Bageri</title>
+  <link rel="icon" href="logo.webp" type="image/webp">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+    body {
+      background: #fff8f0;
+      color: #333;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    nav {
+      background: #fff;
+      padding: 15px 5%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: clamp(1rem, 4vw, 1.3rem);
+      color: #d2691e;
+    }
+    .nav-logo img {
+      height: clamp(30px, 6vw, 40px);
+      width: auto;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      font-size: clamp(0.9rem, 3vw, 1rem);
+      transition: color 0.3s ease;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background-color: #d2691e;
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    header, section {
+      padding: clamp(40px, 8vw, 80px) 5%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    header {
+      background: linear-gradient(rgba(255,248,240,0.9), rgba(255,248,240,0.9)), 
+                  url('1.jpg') center/cover no-repeat;
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+    header h1 {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      margin-bottom: 15px;
+      color: #3a2c1a;
+      font-weight: 700;
+    }
+    header p {
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      max-width: 600px;
+      margin: 0 auto;
+      color: #5a4a3a;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      margin-bottom: 40px;
+      text-align: center;
+      color: #3a2c1a;
+      position: relative;
+    }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background: #d2691e;
+      margin: 15px auto 0;
+    }
+    .gallery-container {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto 60px;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .slideshow {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: 56.25%;
+    }
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+    .slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .slide-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      color: white;
+      padding: 20px;
+      z-index: 2;
+    }
+    .slide-caption h3 {
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    .slide-caption p {
+      font-size: clamp(0.9rem, 3vw, 1rem);
+    }
+    .slide-nav {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 3;
+    }
+    .slide-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .slide-dot.active {
+      background: white;
+      transform: scale(1.2);
+    }
+    .bread-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin: 40px auto;
+      padding: 0 20px;
+      max-width: 1100px;
+      justify-items: center; /* Center cards horizontally */
+    }
+    .bread-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      max-width: 300px;
+    }
+    .bread-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    .bread-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .bread-info {
+      padding: 20px;
+    }
+    .bread-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: #3a2c1a;
+    }
+    .bread-info p {
+      color: #5a4a3a;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+    }
+    .price {
+      font-weight: 700;
+      color: #d2691e;
+      font-size: 1.2rem;
+    }
+    .download-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .download-buttons img {
+      height: 50px;
+      max-width: 100%;
+      transition: transform 0.3s ease;
+    }
+    .download-buttons img:hover {
+      transform: translateY(-3px);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal.show {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      margin: 20px;
+    }
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+    .modal-content h3 {
+      font-size: 1.5rem;
+      color: #3a2c1a;
+      margin-bottom: 15px;
+    }
+    .modal-content p {
+      color: #5a4a3a;
+      line-height: 1.7;
+    }
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      background: #3a2c1a;
+      color: #f0e6d6;
+      font-size: 0.95rem;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: white;
+    }
+    .footer-logo img {
+      height: 40px;
+      width: auto;
+    }
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .social-links a {
+      color: #f0e6d6;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.1);
+    }
+    .social-links a:hover {
+      color: white;
+      background: #d2691e;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        padding: 15px;
+      }
+      .nav-logo {
+        margin-bottom: 10px;
+      }
+      .nav-links {
+        justify-content: center;
+      }
+      header {
+        min-height: 50vh;
+        padding: 40px 20px;
+      }
+      .slideshow {
+        aspect-ratio: 4/3;
+      }
+      .slide-caption {
+        padding: 15px;
+      }
+      .bread-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+      }
+      .modal-content {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 2rem;
+      }
+      header p {
+        font-size: 1rem;
+      }
+      .section-title {
+        font-size: 1.8rem;
+      }
+      .bread-info h3 {
+        font-size: 1.2rem;
+      }
+      .download-buttons img {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo">
+      <img src="logo.webp" alt="Ek Bageri Logo">
+      <strong>Ek Bageri</strong>
+    </div>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#products">Products</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <header id="home">
+    <h1>Artisan Breads Crafted with Passion</h1>
+    <p>Experience the tradition of European baking with our handcrafted breads made from the finest organic ingredients.</p>
+  </header>
+
+  <section class="section" id="gallery">
+    <h2 class="section-title">Our Bakery Gallery</h2>
+    <div class="gallery-container">
+      <div class="slideshow" id="slideshow"></div>
+      <div class="slide-nav" id="slideNav"></div>
+    </div>
+  </section>
+
+  <section class="section" id="products">
+    <h2 class="section-title">Our Signature Breads</h2>
+    <div class="bread-grid">
+      <div class="bread-card" onclick="showInfo('Durum Bread', 'Our durum bread is made from high-protein durum wheat flour, resulting in a soft yet sturdy flatbread perfect for wraps and sandwiches. Baked fresh throughout the day to ensure maximum freshness.')">
+        <img src="durum.jpg" alt="Durum Bread">
+        <div class="bread-info">
+          <h3>Durum Bread</h3>
+          <p>A soft and stretchy flatbread, perfect for wraps and sandwiches.</p>
+          <div class="price">2.50 DKK</div>
+        </div>
+      </div>
+      <div class="bread-card" onclick="showInfo('Pita Bread', 'Authentic pita bread that puffs up beautifully in our stone oven. The perfect pocket for your favorite fillings or as a side for dips and spreads. Made with just flour, water, yeast, and salt - simple ingredients for exceptional flavor.')">
+        <img src="pita.jpg" alt="Pita Bread">
+        <div class="bread-info">
+          <h3>Pita Bread</h3>
+          <p>Baked fresh daily and great for dips or fillings.</p>
+          <div class="price">2.50 DKK</div>
+        </div>
+      </div>
+      <div class="bread-card" onclick="showInfo('Seeded Loaf', 'Our nutrient-packed seeded loaf combines seven different seeds with whole wheat flour for a hearty, flavorful bread. Each loaf contains flax, sunflower, pumpkin, sesame, poppy, chia, and quinoa seeds for maximum nutrition and texture.')">
+        <img src="sd.jpg" alt="Seeded Loaf">
+        <div class="bread-info">
+          <h3>Seeded Loaf</h3>
+          <p>A nutritious and hearty loaf topped with healthy seeds.</p>
+          <div class="price">2.50 DKK</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <h2 class="section-title">Visit Our Bakery</h2>
+    <p style="text-align: center; max-width: 700px; margin: 0 auto 20px; color: #5a4a3a;">
+      We're located in the heart of the city, where the aroma of freshly baked bread fills the air every morning.
+    </p>
+    <div style="text-align: center; margin-bottom: 30px;">
+      <p><strong>Ek Bageri</strong><br>
+      Tingstedvej 25, 2640 Hedehusene<br>
+      Open daily from 7:00 AM – 5:00 PM<br>
+      Phone: 42 50 05 72</p>
+    </div>
+    <h3 style="text-align: center; margin: 40px 0 20px; color: #3a2c1a;">Download Our App</h3>
+    <p style="text-align: center; max-width: 600px; margin: 0 auto 30px; color: #5a4a3a;">
+      Order ahead, get exclusive offers, and earn rewards with our bakery app.
+    </p>
+    <div class="download-buttons">
+      <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Download on Google Play"></a>
+      <a href="#"><img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on App Store"></a>
+    </div>
+  </section>
+
+  <div class="modal" id="modal" onclick="hideModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h3 id="modal-title"></h3>
+      <p id="modal-text"></p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">
+      <img src="logo.webp" alt="Ek Bageri Logo">
+      <strong>Ek Bageri</strong>
+    </div>
+    <div class="social-links">
+      <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+    </div>
+    <p>&copy; 2025 Ek Bageri. All rights reserved.</p>
+    <p style="margin-top: 10px; font-size: 0.8rem;">Crafted with love and fresh ingredients</p>
+  </footer>
+
+  <script>
+    // Slideshow functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const slideshow = document.getElementById('slideshow');
+      const slideNav = document.getElementById('slideNav');
+      
+      // Image data with captions
+      const slidesData = [
+        { 
+          src: '1.jpg', 
+          alt: 'Bakery interior',
+          caption: 'Our Cozy Bakery',
+          description: 'Where tradition meets modern baking techniques'
+        },
+        { 
+          src: '2.jpg', 
+          alt: 'Fresh bread display',
+          caption: 'Daily Fresh Bread',
+          description: 'Baked throughout the day for maximum freshness'
+        },
+        { 
+          src: '3.jpg', 
+          alt: 'Baking process',
+          caption: 'Handcrafted With Care',
+          description: 'Each loaf shaped by our experienced bakers'
+        },
+        { 
+          src: '4.jpg', 
+          alt: 'Bread assortment',
+          caption: 'Wide Selection',
+          description: 'From classic staples to seasonal specialties'
+        },
+        { 
+          src: '5.jpg', 
+          alt: 'Pastry selection',
+          caption: 'Sweet Treats',
+          description: 'Perfect companions to our artisan breads'
+        },
+        { 
+          src: '6.jpg', 
+          alt: 'Customer enjoying bread',
+          caption: 'Happy Customers',
+          description: 'The reason we do what we do'
+        }
+      ];
+
+      // Create slides
+      function createSlides() {
+        slidesData.forEach((slide, index) => {
+          const slideElement = document.createElement('div');
+          slideElement.className = 'slide';
+          if (index === 0) slideElement.classList.add('active');
+          
+          const img = document.createElement('img');
+          img.src = slide.src;
+          img.alt = slide.alt;
+          img.loading = "lazy";
+          
+          const caption = document.createElement('div');
+          caption.className = 'slide-caption';
+          caption.innerHTML = `
+            <h3>${slide.caption}</h3>
+            <p>${slide.description}</p>
+          `;
+          
+          slideElement.appendChild(img);
+          slideElement.appendChild(caption);
+          slideshow.appendChild(slideElement);
+          
+          // Create navigation dots
+          const dot = document.createElement('div');
+          dot.className = 'slide-dot';
+          if (index === 0) dot.classList.add('active');
+          dot.dataset.index = index;
+          dot.addEventListener('click', () => goToSlide(index));
+          slideNav.appendChild(dot);
+        });
+      }
+
+      // Initialize slideshow
+      createSlides();
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.slide-dot');
+      let currentSlide = 0;
+      let slideInterval;
+
+      function goToSlide(index) {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+        currentSlide = (index + slides.length) % slides.length;
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+        
+        // Reset the timer when manually navigating
+        clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, 4000);
+      }
+
+      function nextSlide() {
+        goToSlide(currentSlide + 1);
+      }
+
+      function startSlideShow() {
+        // Clear any existing interval
+        clearInterval(slideInterval);
+        // Start new interval (4 seconds)
+        slideInterval = setInterval(nextSlide, 4000);
+      }
+
+      // Initialize slideshow
+      startSlideShow();
+
+      // Pause on hover
+      if (slideshow) {
+        slideshow.addEventListener('mouseenter', () => {
+          clearInterval(slideInterval);
+        });
+
+        slideshow.addEventListener('mouseleave', startSlideShow);
+      }
+    });
+
+    // Modal functionality
+    function showInfo(title, text) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-text').innerText = text;
+      document.getElementById('modal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideModal() {
+      document.getElementById('modal').classList.remove('show');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when pressing Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hideModal();
+    });
+  </script>
+</body>
+</html>
